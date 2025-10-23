@@ -3,10 +3,11 @@ package com.linktic.challenge.inventory.infrastructure.web;
 import com.linktic.challenge.inventory.application.dto.InventoryResponseDto;
 import com.linktic.challenge.inventory.application.port.in.InventoryCommandUseCase;
 import com.linktic.challenge.inventory.application.port.in.InventoryQueryUseCase;
+import com.linktic.challenge.shared.response.StandardResponse;
+import com.linktic.challenge.shared.util.StandardResponses;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,36 +23,36 @@ public class InventoryController {
 
     @GetMapping("/{productId}")
     @Operation(summary = "Consultar inventario", description = "Obtiene el inventario actual de un producto específico por su ID")
-    public ResponseEntity<InventoryResponseDto> getInventoryByProductId(
+    public StandardResponse<InventoryResponseDto> getInventoryByProductId(
             @PathVariable String productId) {
         InventoryResponseDto response = inventoryQueryUseCase.getInventoryByProductId(productId);
-        return ResponseEntity.ok(response);
+        return StandardResponses.retrieved(response, "Inventario consultado exitosamente");
     }
 
     @PostMapping("/{productId}/reduce")
     @Operation(summary = "Reducir stock", description = "Reduce la cantidad de stock disponible para un producto específico")
-    public ResponseEntity<InventoryResponseDto> reduceStock(
+    public StandardResponse<InventoryResponseDto> reduceStock(
             @PathVariable String productId,
             @RequestParam Integer quantity) {
         InventoryResponseDto response = inventoryCommandUseCase.reduceStock(productId, quantity);
-        return ResponseEntity.ok(response);
+        return StandardResponses.updated(response, "Stock reducido exitosamente");
     }
 
     @PostMapping("/{productId}/increase")
     @Operation(summary = "Aumentar stock", description = "Incrementa la cantidad de stock disponible para un producto específico")
-    public ResponseEntity<InventoryResponseDto> increaseStock(
+    public StandardResponse<InventoryResponseDto> increaseStock(
             @PathVariable String productId,
             @RequestParam Integer quantity) {
         InventoryResponseDto response = inventoryCommandUseCase.increaseStock(productId, quantity);
-        return ResponseEntity.ok(response);
+        return StandardResponses.updated(response, "Stock aumentado exitosamente");
     }
 
     @PatchMapping("/{productId}")
     @Operation(summary = "Actualizar stock", description = "Actualiza el stock de un producto con un cambio específico (positivo o negativo)")
-    public ResponseEntity<InventoryResponseDto> updateStock(
+    public StandardResponse<InventoryResponseDto> updateStock(
             @PathVariable String productId,
             @RequestParam Integer quantityChange) {
         InventoryResponseDto response = inventoryCommandUseCase.updateStock(productId, quantityChange);
-        return ResponseEntity.ok(response);
+        return StandardResponses.updated(response, "Stock actualizado exitosamente");
     }
 }
