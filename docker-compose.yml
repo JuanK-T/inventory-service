@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: inventories-postgres  # Cambiado el nombre
+    environment:
+      POSTGRES_DB: inventaries_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"  # Puerto diferente para evitar conflicto
+    volumes:
+      - inventories_postgres_data:/var/lib/postgresql/data  # Volumen único
+      - ./src/main/resources/db/migration:/docker-entrypoint-initdb.d
+    networks:
+      - inventories-network  # Red específica
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: inventories-pgadmin  # Cambiado el nombre
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@inventories.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"  # Puerto diferente
+    networks:
+      - inventories-network
+    depends_on:
+      - postgres
+
+volumes:
+  inventories_postgres_data:  # Volumen con nombre único
+
+networks:
+  inventories-network:
+    driver: bridge
